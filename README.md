@@ -38,6 +38,13 @@ The scanner:
   - `getAssetsByOwner`
 - never writes mnemonic phrases, BIP-39 seeds, derived private seeds, or secret keys to output
 
+The rent checker is also read-only. It restricts RPC calls to:
+
+- `getTokenAccountsByOwner`
+- `getMinimumBalanceForRentExemption`
+
+Neither tool closes accounts or constructs, signs, simulates, or submits transactions.
+
 ## Requirements
 
 Node.js 18 or newer.
@@ -122,6 +129,44 @@ export BIP39_PASSPHRASE='your passphrase'
 node solana_inventory.cjs --seeds ./seedphrases.txt
 ```
 
+## Check token-account rent
+
+Run the rent checker against the inventory produced by the main scanner:
+
+```bash
+node rent_checker.cjs \
+  --inventory ./inventory.json \
+  --output ./inventory_rent
+```
+
+The equivalent npm command is:
+
+```bash
+npm run rent -- \
+  --inventory ./inventory.json \
+  --output ./inventory_rent
+```
+
+The rent checker scans legacy SPL Token and Token-2022 accounts and calculates the rent-exempt minimum from each account's actual data size. It reports, per wallet and in aggregate:
+
+- total lamports held in token accounts
+- rent-exempt reserve tied up in those accounts
+- empty-account rent potentially recoverable by the wallet owner
+- empty-account rent controlled by an external close authority
+- rent tied to token accounts that still hold assets
+- lamports held above the rent-exempt minimum
+- any detected rent shortfall
+
+It can also scan a public-address list without requiring an inventory file:
+
+```bash
+node rent_checker.cjs \
+  --addresses ./addresses.txt \
+  --output ./address_rent
+```
+
+See [`RENT_CHECKER.md`](./RENT_CHECKER.md) for the rent-field definitions and complete command reference.
+
 ## Outputs
 
 For `--output ./inventory`, the scanner writes:
@@ -131,9 +176,17 @@ For `--output ./inventory`, the scanner writes:
 - `inventory_assets.csv` — native SOL and raw SPL/Token-2022 holdings
 - `inventory_das_assets.csv` — DAS-normalized assets when DAS is configured
 
+For `--output ./inventory_rent`, the rent checker writes:
+
+- `inventory_rent.json` — aggregate, wallet, and token-account rent details
+- `inventory_rent_wallets.csv` — one rent summary row per derived wallet
+- `inventory_rent_accounts.csv` — one row per legacy SPL or Token-2022 account
+
 Output files are created with mode `0600` on Unix-like systems.
 
 ## Useful options
+
+Inventory scanner:
 
 ```text
 --count 200
@@ -146,8 +199,21 @@ Output files are created with mode `0600` on Unix-like systems.
 --das-page-size 1000
 ```
 
-Run `node solana_inventory.cjs --help` for the full CLI reference.
+Rent checker:
+
+```text
+--inventory ./inventory.json
+--addresses ./addresses.txt
+--output ./rent_report
+--batch-wallets 10
+--commitment finalized
+--retries 5
+```
+
+Run `node solana_inventory.cjs --help` or `node rent_checker.cjs --help` for the full CLI references.
 
 ## Scope limitation
 
 Standard RPC mode reports assets directly owned by each derived address. It does not infer assets deposited into DeFi protocols, stake accounts controlled through separate authorities, escrowed positions, or compressed NFTs. DAS expands indexed asset identification but remains dependent on the configured provider’s index.
+
+The rent checker currently inventories rent held by legacy SPL Token and Token-2022 accounts owned by the scanned addresses. It does not include every possible Solana account type, such as stake accounts, nonce accounts, program-derived escrow accounts, or arbitrary program state.
