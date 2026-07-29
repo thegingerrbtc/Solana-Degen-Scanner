@@ -2,11 +2,12 @@
   "name": "solana-degen-scanner",
   "version": "1.0.0",
   "private": true,
-  "description": "Read-only Solana deterministic wallet and asset inventory scanner",
+  "description": "Read-only Solana deterministic wallet, asset, and rent inventory tools",
   "main": "solana_inventory.cjs",
   "scripts": {
     "scan": "node solana_inventory.cjs",
-    "check": "node --check solana_inventory.cjs"
+    "rent": "node rent_checker.cjs",
+    "check": "node --check solana_inventory.cjs && node --check rent_checker.cjs"
   },
   "engines": {
     "node": ">=18"

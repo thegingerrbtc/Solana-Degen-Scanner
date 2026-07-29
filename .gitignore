@@ -6,7 +6,15 @@ inventory.json
 inventory_wallets.csv
 inventory_assets.csv
 inventory_das_assets.csv
+inventory_rent.json
+inventory_rent_wallets.csv
+inventory_rent_accounts.csv
+rent_report.json
+rent_report_wallets.csv
+rent_report_accounts.csv
 solana_inventory.json
 solana_inventory_wallets.csv
 solana_inventory_assets.csv
 solana_inventory_das_assets.csv
+solana_inventory_rent.csv
+solana_inventory_rent_accounts.csv
