@@ -1,0 +1,12 @@
+seedphrases.txt
+.env
+node_modules/
+*.log
+inventory.json
+inventory_wallets.csv
+inventory_assets.csv
+inventory_das_assets.csv
+solana_inventory.json
+solana_inventory_wallets.csv
+solana_inventory_assets.csv
+solana_inventory_das_assets.csv
