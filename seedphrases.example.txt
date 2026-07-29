@@ -1,0 +1,4 @@
+# One BIP-39 mnemonic per line.
+# Blank lines and comment lines are ignored.
+#
+# abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
